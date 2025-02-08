@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
             $table->foreignId('blood_type_id');
+            $table->date('last_donation_date')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
