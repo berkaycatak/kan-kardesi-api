@@ -17,11 +17,9 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+
+    protected $fillable = ['name', 'email', 'phone', 'password', 'blood_type_id', 'city', 'latitude', 'longitude', 'last_donation_date'];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -44,5 +42,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function bloodType()
+    {
+        return $this->belongsTo(BloodType::class);
+    }
+
+    public function bloodRequests()
+    {
+        return $this->hasMany(BloodRequest::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 }
