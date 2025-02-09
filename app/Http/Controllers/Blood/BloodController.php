@@ -42,4 +42,33 @@ class BloodController extends Controller
         return $this->output;
     }
 
+    public function search(Request $request)
+    {
+        try {
+            $bloodRepository = new BloodRepository();
+
+            $city = $request->city;
+            $blood_type = $request->blood_type;
+
+            if ($city == null || $blood_type == null)
+                throw new \Exception("Lütfen tüm alanları doldurun.");
+
+            $bloodRequests = $bloodRepository->search(
+                $city,
+                $blood_type
+            );
+
+            if ($bloodRequests["error"] == 1)
+                throw new \Exception($bloodRequests["msg"]);
+
+            $this->output["blood_requests"] = $bloodRequests;
+            $this->output["status"] = true;
+
+        }catch (\Exception $exception){
+            $this->output['error'] = 1;
+            $this->output['msg'] = $exception->getMessage();
+        }
+
+        return $this->output;
+    }
 }

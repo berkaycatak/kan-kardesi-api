@@ -2,6 +2,7 @@
 
 namespace App\Http\Repositories\Blood;
 
+use App\Models\BloodCompatibility;
 use App\Models\BloodRequest;
 use App\Models\BloodType;
 
@@ -11,6 +12,9 @@ class BloodRepository
         'error' => 0,
     ];
 
+    /**
+     * Yeni kan bağış ihtiyacı oluşturur..
+     */
     public function sendRequest(
         int $required_blood_type_id,
         int $units_needed,
@@ -59,4 +63,45 @@ class BloodRepository
             return $this->output;
         }
     }
+
+    /**
+     * Kullanıcının kan verebileceği açık ilanları getirir.
+     */
+    public function search(int $city, int $blood_type_id)
+    {
+        try {
+            $compatibleBloodTypes = BloodCompatibility::where('donor_blood_type_id', $blood_type_id)
+                ->pluck('recipient_blood_type_id');
+
+            if ($compatibleBloodTypes->isEmpty()) {
+                throw new \Exception("Bu kan grubu için uygun alıcı bulunamadı.");
+            }
+
+            if (empty($city)) {
+                throw new \Exception("Şehir alanı boş bırakılamaz.");
+            }
+
+            if ($city < 1 || $city > 81) {
+                throw new \Exception("Geçersiz şehir bilgisi.");
+            }
+
+            $bloodRequests = BloodRequest::whereIn('required_blood_type_id', $compatibleBloodTypes)
+                ->where('city', $city)
+                ->where('status', 'pending')
+                ->get();
+
+            if ($bloodRequests->isEmpty()) {
+                throw new \Exception("Bu şehirde uygun bir kan talebi bulunamadı.");
+            }
+
+            $this->output["blood_requests"] = $bloodRequests;
+            return $this->output;
+
+        } catch (\Exception $exception) {
+            $this->output["error"] = 1;
+            $this->output["msg"] = $exception->getMessage();
+            return $this->output;
+        }
+    }
+
 }
