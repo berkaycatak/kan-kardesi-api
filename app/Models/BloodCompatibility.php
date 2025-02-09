@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class BloodCompatibility extends Model
 {
     use HasFactory;
+
+    protected $table = "blood_compatibility";
     protected $fillable = ['donor_blood_type_id', 'recipient_blood_type_id'];
 
     public function donorBloodType()

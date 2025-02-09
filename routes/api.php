@@ -22,6 +22,7 @@ Route::middleware([StorePlayerId::class])->group(function () {
     Route::group(["middleware" => ["auth:sanctum"]], function() {
         Route::prefix('/blood')->group(function () {
             Route::post("/request", [BloodController::class, "sendRequest"])->name("send_blood_request");
+            Route::post("/search", [BloodController::class, "search"])->name("search_blood_request");
         });
     });
 });
