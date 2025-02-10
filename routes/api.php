@@ -17,10 +17,12 @@ Route::middleware([StorePlayerId::class])->group(function () {
         Route::post("/login", [AuthController::class, "login"])->name("login");
         Route::post("/register", [AuthController::class, "register"])->name("register");
 
+
         Route::post("/splash", [AuthController::class, "loginCheck"])->name("splash");
     });
 
     Route::group(["middleware" => ["auth:sanctum"]], function() {
+        Route::post("/auth/logout", [AuthController::class, "logout"])->name("logout");
 
         Route::prefix('/settings')->group(function () {
             Route::post("/update", [UserController::class, "update"])->name("update_profile");

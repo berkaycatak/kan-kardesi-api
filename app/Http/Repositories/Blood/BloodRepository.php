@@ -11,13 +11,18 @@ class BloodRepository extends Repository
 {
     /**
      * Yeni kan bağış ihtiyacı oluşturur..
+     * @param int $required_blood_type_id
+     * @param int $units_needed
+     * @param int $city
+     * @param String $description
+     * @return BloodRequest|int[]|mixed
      */
     public function sendRequest(
         int $required_blood_type_id,
         int $units_needed,
         int $city,
         String $description
-    )
+    ): mixed
     {
         try {
             $check_blood_type = BloodType::find($required_blood_type_id);
@@ -63,8 +68,11 @@ class BloodRepository extends Repository
 
     /**
      * Kullanıcının kan verebileceği açık ilanları getirir.
+     * @param int $city
+     * @param int $blood_type_id
+     * @return mixed
      */
-    public function search(int $city, int $blood_type_id)
+    public function search(int $city, int $blood_type_id): mixed
     {
         try {
             $compatibleBloodTypes = BloodCompatibility::where('donor_blood_type_id', $blood_type_id)
