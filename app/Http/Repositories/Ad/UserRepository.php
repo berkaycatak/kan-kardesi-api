@@ -5,10 +5,111 @@ namespace App\Http\Repositories\Ad;
 use App\Http\Repositories\Repository;
 use App\Models\BloodType;
 use App\Models\User;
+use App\Models\UserDevices;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends Repository
 {
+
+    public function login(
+        String $email,
+        String $password,
+        String $fcmToken
+    )
+    {
+        try {
+            $user = User::where("email", $email)->first();
+
+            if (!$user || !Hash::check($password, $user->password))
+                throw new \Exception("E-posta veya parola hatalı");
+
+            $token = $user->createToken("app_token")->plainTextToken;
+
+            if ($fcmToken != null)
+            {
+                $userDevices = UserDevices::where("user_id", $user->id)->first();
+                if($userDevices != null) {
+                    $userDevices->player_id = $fcmToken;
+                    $userDevices->save();
+                } else {
+                    $userDevices = UserDevices::create([
+                        'user_id' => $user->id,
+                        'player_id' => $fcmToken
+                    ]);
+                }
+            }
+
+            $this->output["status"] = true;
+            $this->output["user"] = $user;
+            $this->output["token"] = $token;
+
+        }catch (\Exception $exception){
+            $this->output['error'] = 1;
+            $this->output['msg'] = $exception->getMessage();
+        }
+        return $this->output;
+    }
+
+    /**
+     * @param String $name
+     * @param String $phone_number
+     * @param String $email
+     * @param int $blood_type
+     * @param String $password
+     * @param String|null $lat
+     * @param String|null $lng
+     * @param String|null $city
+     * @return mixed
+     */
+    public function create(
+        String $name,
+        String $phone_number,
+        String $email,
+        int $blood_type,
+        String $password,
+        ?String $lat,
+        ?String $lng,
+        ?String $city
+    ): mixed
+    {
+        try {
+            $user_check = User::where("email", $email)->count() == 0;
+            if (!$user_check)
+                throw new \Exception("Bu e-posta adresi kullanılıyor.");
+
+            $user_check = User::where("phone", $phone_number)->count() == 0;
+            if (!$user_check)
+                throw new \Exception("Bu telefon numarası kullanılıyor.");
+
+            $user                   = new User();
+            $user->name             = $name;
+            $user->email            = $email;
+            $user->phone            = $phone_number;
+            $user->blood_type_id    = $blood_type;
+            $user->password         = bcrypt($password);
+            // location
+            $user->latitude         = $lat;
+            $user->longitude        = $lng;
+            $user->city             = $city;
+            $save                   = $user->save();
+
+            if (!$save)
+                throw new \Exception("Kayıt gerçekleştirilemedi.");
+
+            $token = $user->createToken("app_token")->plainTextToken;
+            if(!$token)
+                throw new \Exception("Kayıt gerçekleştirilemedi.");
+
+            $this->output["status"] = true;
+            $this->output["user"] = User::find($user->id);
+            $this->output["token"] = $token;
+
+        }catch (\Exception $exception){
+            $this->output['error'] = 1;
+            $this->output['msg'] = $exception->getMessage();
+        }
+        return $this->output;
+    }
 
     /**
      * Update user information

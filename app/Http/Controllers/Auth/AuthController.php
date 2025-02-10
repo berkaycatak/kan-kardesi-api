@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Repositories\Ad\UserRepository;
 use App\Models\User;
 use App\Models\UserDevices;
 use Illuminate\Http\Request;
@@ -24,30 +25,19 @@ class AuthController extends Controller
                 throw new \Exception("Lütfen parolanızı girin.");
 
 
-            $user = User::where("email", $email)->first();
+            $user_repository = new UserRepository();
+            $response = $user_repository->login(
+                email: $email,
+                password: $password,
+                fcmToken: $fcmToken
+            );
 
-            if (!$user || !Hash::check($request->password, $user->password))
-                throw new \Exception("E-posta veya parola hatalı");
-
-            $token = $user->createToken("app_token")->plainTextToken;
-
-            if ($fcmToken != null)
-            {
-                $userDevices = UserDevices::where("user_id", $user->id)->first();
-                if($userDevices != null) {
-                    $userDevices->player_id = $fcmToken;
-                    $userDevices->save();
-                } else {
-                    $userDevices = UserDevices::create([
-                        'user_id' => $user->id,
-                        'player_id' => $fcmToken
-                    ]);
-                }
-            }
+            if ($response["error"] == 1)
+                throw new \Exception($response["msg"]);
 
             $this->output["login"] = true;
-            $this->output["user"] = $user;
-            $this->output["token"] = $token;
+            $this->output["user"] = $response["user"];
+            $this->output["token"] = $response["token"];
 
         }catch (\Exception $exception){
             $this->output = [
@@ -84,38 +74,24 @@ class AuthController extends Controller
             if (empty($password))
                 throw new \Exception("Lütfen parola girin.");
 
-            $user_check = User::where("email", $email)->count() == 0;
-            if (!$user_check)
-                throw new \Exception("Bu e-posta adresi kullanılıyor.");
+            $user_repository = new UserRepository();
+            $response = $user_repository->create(
+                name: $name,
+                phone_number: $phone_number,
+                email: $email,
+                blood_type: $blood_type,
+                password: $password,
+                lat: $lat,
+                lng: $lng,
+                city: $city
+            );
 
-            $user_check = User::where("phone", $phone_number)->count() == 0;
-            if (!$user_check)
-                throw new \Exception("Bu telefon numarası kullanılıyor.");
-
-            $user                   = new User();
-            $user->name             = $name;
-            $user->email            = $email;
-            $user->phone            = $phone_number;
-            $user->blood_type_id    = $blood_type;
-            $user->password         = bcrypt($password);
-            // location
-            $user->latitude         = $lat;
-            $user->longitude        = $lng;
-            $user->city             = $city;
-            $save                   = $user->save();
-
-            if (!$save)
-                throw new \Exception("Kayıt gerçekleştirilemedi.");
-
-            $token = $user->createToken("app_token")->plainTextToken;
-            if(!$token)
-                throw new \Exception("Kayıt gerçekleştirilemedi.");
-
-            $user = User::find($user->id);
+            if ($response["error"] == 1)
+                throw new \Exception($response["msg"]);
 
             $this->output["login"] = true;
-            $this->output["user"] = $user;
-            $this->output["token"] = $token;
+            $this->output["user"] = $response["user"];
+            $this->output["token"] = $response["token"];
 
         }catch (\Exception $exception){
             $this->output = [
