@@ -2,16 +2,13 @@
 
 namespace App\Http\Repositories\Blood;
 
+use App\Http\Repositories\Repository;
 use App\Models\BloodCompatibility;
 use App\Models\BloodRequest;
 use App\Models\BloodType;
 
-class BloodRepository
+class BloodRepository extends Repository
 {
-    private $output = [
-        'error' => 0,
-    ];
-
     /**
      * Yeni kan bağış ihtiyacı oluşturur..
      */
