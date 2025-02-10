@@ -12,7 +12,7 @@ class UserController extends Controller
      * @param Request $request
      * @return array|mixed
      */
-    public function update(Request $request)
+    public function update(Request $request): mixed
     {
         try {
             $name = $request->name;
@@ -48,7 +48,7 @@ class UserController extends Controller
      * @param Request $request
      * @return array|mixed
      */
-    public function changePassword(Request $request)
+    public function changePassword(Request $request): mixed
     {
         try {
             $old_password = $request->old_password;
