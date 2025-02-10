@@ -24,6 +24,7 @@ Route::middleware([StorePlayerId::class])->group(function () {
 
         Route::prefix('/settings')->group(function () {
             Route::post("/update", [UserController::class, "update"])->name("update_profile");
+            Route::post("/change-password", [UserController::class, "changePassword"])->name("change_password");
         });
 
         Route::prefix('/blood')->group(function () {

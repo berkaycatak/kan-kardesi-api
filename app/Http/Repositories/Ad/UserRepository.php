@@ -5,6 +5,7 @@ namespace App\Http\Repositories\Ad;
 use App\Http\Repositories\Repository;
 use App\Models\BloodType;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends Repository
 {
@@ -77,6 +78,40 @@ class UserRepository extends Repository
             $status = $user->save();
             if (!$status) {
                 throw new \Exception("Kullanıcı güncellenirken bir problem yaşandı.");
+            }
+
+            $this->output["user"] = $user;
+        }catch (\Exception $exception){
+            $this->output["error"] = 1;
+            $this->output["msg"] = $exception->getMessage();
+        }
+        return $this->output;
+    }
+
+    /**
+     * @param String $old_password
+     * @param String $new_password
+     * @return mixed
+     */
+    public function changePassword(
+        String $old_password,
+        String $new_password
+    ): mixed
+    {
+        try {
+            $user = User::where("id", auth()->user()->id)->first();
+            if ($user == null) {
+                throw new \Exception("Kullanıcı bulunamadı.");
+            }
+
+            if (!Hash::check($old_password, $user->password)) {
+                throw new \Exception("Mevcut parolanızı yanlış girdiniz.");
+            }
+
+            $user->password = Hash::make($new_password);
+            $status = $user->save();
+            if (!$status) {
+                throw new \Exception("Parola değiştirilirken bir problem yaşandı.");
             }
 
             $this->output["user"] = $user;
