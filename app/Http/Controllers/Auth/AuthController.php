@@ -107,36 +107,21 @@ class AuthController extends Controller
     {
         try {
             $fcmToken = $request->playerId;
-            $user = Auth::guard('sanctum')->user();
-            if ($user == null)
-                throw new \Exception("Unauthenticated.");
 
-            $token = $user->createToken("app_token")->plainTextToken;
-            $token_id = explode("|", $token)[0];
-            $user->tokens()->where("id", "!=", $token_id)->delete();
+            $user_repository = new UserRepository();
+            $response = $user_repository->splash(
+                fcmToken: $fcmToken
+            );
 
-            if ($fcmToken != null)
-            {
-                $userDevices = UserDevices::where("user_id", $user->id)->first();
-                if($userDevices != null) {
-                    $userDevices->player_id = $fcmToken;
-                    $userDevices->save();
-                } else {
-                    $userDevices = UserDevices::create([
-                        'user_id' => $user->id,
-                        'player_id' => $fcmToken
-                    ]);
-                }
-            }
+            if ($response["error"] == 1)
+                throw new \Exception($response["msg"]);
 
-            $this->output = [
-                "status" => 1,
-                "user" => $user,
-                "token" => $token,
-            ];
-
+            $this->output["status"] = true;
+            $this->output["user"] = $response["user"];
+            $this->output["token"] = $response["token"];
         }catch (\Exception $exception){
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            $this->output["status"] = false;
+            $this->output["msg"] = $exception->getMessage();
         }
 
         return $this->output;
@@ -144,10 +129,20 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
-        return [
-            "status" => 1,
-            "message" => "Başarıyla çıkış yapıldı",
-        ];
+        try {
+            $user_repository = new UserRepository();
+            $response = $user_repository->logout();
+
+            if ($response["error"] == 1)
+                throw new \Exception($response["msg"]);
+
+            $this->output["status"] = true;
+            $this->output["msg"] = $response["msg"];
+        }catch (\Exception $exception){
+            $this->output["status"] = false;
+            $this->output["msg"] = $exception->getMessage();
+        }
+
+        return $this->output;
     }
 }

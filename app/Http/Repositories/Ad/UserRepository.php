@@ -6,16 +6,23 @@ use App\Http\Repositories\Repository;
 use App\Models\BloodType;
 use App\Models\User;
 use App\Models\UserDevices;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends Repository
 {
 
+    /**
+     * @param String $email
+     * @param String $password
+     * @param String $fcmToken
+     * @return int[]|mixed
+     */
     public function login(
         String $email,
         String $password,
         String $fcmToken
-    )
+    ): mixed
     {
         try {
             $user = User::where("email", $email)->first();
@@ -107,6 +114,57 @@ class UserRepository extends Repository
         }catch (\Exception $exception){
             $this->output['error'] = 1;
             $this->output['msg'] = $exception->getMessage();
+        }
+        return $this->output;
+    }
+
+    public function splash(
+        ?String $fcmToken
+    )
+    {
+        try {
+            $user = Auth::guard('sanctum')->user();
+            if ($user == null)
+                throw new \Exception("Unauthenticated.");
+
+            $token = $user->createToken("app_token")->plainTextToken;
+            $token_id = explode("|", $token)[0];
+            $user->tokens()->where("id", "!=", $token_id)->delete();
+
+            if ($fcmToken != null)
+            {
+                $userDevices = UserDevices::where("user_id", $user->id)->first();
+                if($userDevices != null) {
+                    $userDevices->player_id = $fcmToken;
+                    $userDevices->save();
+                } else {
+                    $userDevices = UserDevices::create([
+                        'user_id' => $user->id,
+                        'player_id' => $fcmToken
+                    ]);
+                }
+            }
+
+            $this->output["status"] = true;
+            $this->output["user"] = $user;
+            $this->output["token"] = $token;
+
+        }catch (\Exception $exception){
+            $this->output["error"] = 1;
+            $this->output["msg"] = $exception->getMessage();
+        }
+        return $this->output;
+    }
+
+    public function logout()
+    {
+        try {
+            auth()->user()->tokens()->delete();
+            $this->output["status"] = true;
+            $this->output["msg"] = "Başrıyla çıkış yapıldı.";
+        }catch (\Exception $exception){
+            $this->output["error"] = 1;
+            $this->output["msg"] = $exception->getMessage();
         }
         return $this->output;
     }
