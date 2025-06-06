@@ -6,22 +6,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+
+    protected $fillable = ['name', 'email', 'phone', 'password', 'blood_type_id', 'city', 'latitude', 'longitude', 'last_donation_date'];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,4 +44,25 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function bloodType()
+    {
+        return $this->belongsTo(BloodType::class);
+    }
+
+    public function bloodRequests()
+    {
+        return $this->hasMany(BloodRequest::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function devices()
+    {
+        return $this->hasMany(UserDevices::class);
+    }
+
 }
