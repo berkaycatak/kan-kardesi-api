@@ -71,4 +71,25 @@ class BloodController extends Controller
 
         return $this->output;
     }
+
+    public function getBloodTypes()
+    {
+        try {
+            $bloodRepository = new BloodRepository();
+
+            $bloodTypes = $bloodRepository->getBloodTypes();
+
+            if ($bloodTypes["error"] == 1)
+                throw new \Exception($bloodTypes["msg"]);
+
+            $this->output["blood_types"] = $bloodTypes["blood_types"];
+            $this->output["status"] = true;
+
+        }catch (\Exception $exception){
+            $this->output['error'] = 1;
+            $this->output['msg'] = $exception->getMessage();
+        }
+
+        return $this->output;
+    }
 }
