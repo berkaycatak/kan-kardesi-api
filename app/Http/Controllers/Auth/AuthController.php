@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\Ad\UserRepository;
+use App\Http\Repositories\Blood\BloodRepository;
 use App\Models\User;
 use App\Models\UserDevices;
 use Illuminate\Http\Request;
@@ -105,9 +106,18 @@ class AuthController extends Controller
 
     public function loginCheck(Request $request)
     {
+        $blood_types = [];
+        try {
+            $blood_repository =  new BloodRepository();
+            $blood_types =  $blood_repository->getBloodTypes()["blood_types"];
+        }catch (\Exception $exception){
+        }finally{
+            $this->output["blood_types"] = $blood_types;
+        }
+
+
         try {
             $fcmToken = $request->playerId;
-
             $user_repository = new UserRepository();
             $response = $user_repository->splash(
                 fcmToken: $fcmToken
@@ -120,6 +130,7 @@ class AuthController extends Controller
             $this->output["user"] = $response["user"];
             $this->output["token"] = $response["token"];
         }catch (\Exception $exception){
+
             $this->output["status"] = false;
             $this->output["msg"] = $exception->getMessage();
         }

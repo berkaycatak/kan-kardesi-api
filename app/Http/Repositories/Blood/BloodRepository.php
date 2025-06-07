@@ -109,4 +109,21 @@ class BloodRepository extends Repository
         }
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getBloodTypes(): mixed
+    {
+        try {
+            $this->output["blood_types"] = BloodType::get();
+            return $this->output;
+
+        } catch (\Exception $exception) {
+            $this->output["error"] = 1;
+            $this->output["msg"] = $exception->getMessage();
+            return $this->output;
+        }
+    }
+
 }
