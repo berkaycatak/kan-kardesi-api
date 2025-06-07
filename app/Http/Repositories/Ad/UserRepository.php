@@ -15,13 +15,13 @@ class UserRepository extends Repository
     /**
      * @param String $email
      * @param String $password
-     * @param String $fcmToken
+     * @param String|null $fcmToken
      * @return int[]|mixed
      */
     public function login(
         String $email,
         String $password,
-        String $fcmToken
+        ?String $fcmToken
     ): mixed
     {
         try {
@@ -156,7 +156,10 @@ class UserRepository extends Repository
         return $this->output;
     }
 
-    public function logout()
+    /**
+     * @return int[]|mixed
+     */
+    public function logout(): mixed
     {
         try {
             auth()->user()->tokens()->delete();
