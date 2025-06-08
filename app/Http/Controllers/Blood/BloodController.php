@@ -36,6 +36,7 @@ class BloodController extends Controller
 
         }catch (\Exception $exception){
             $this->output['error'] = 1;
+            $this->output['status'] = false;
             $this->output['msg'] = $exception->getMessage();
         }
 
@@ -66,6 +67,7 @@ class BloodController extends Controller
 
         }catch (\Exception $exception){
             $this->output['error'] = 1;
+            $this->output['status'] = false;
             $this->output['msg'] = $exception->getMessage();
         }
 
@@ -87,6 +89,7 @@ class BloodController extends Controller
 
         }catch (\Exception $exception){
             $this->output['error'] = 1;
+            $this->output['status'] = false;
             $this->output['msg'] = $exception->getMessage();
         }
 

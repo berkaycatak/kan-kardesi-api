@@ -4,6 +4,7 @@ namespace App\Http\Repositories\Ad;
 
 use App\Http\Repositories\Repository;
 use App\Models\BloodType;
+use App\Models\City;
 use App\Models\User;
 use App\Models\UserDevices;
 use Illuminate\Support\Facades\Auth;
@@ -178,6 +179,7 @@ class UserRepository extends Repository
      * @param String|null $email
      * @param String|null $phone_number
      * @param int|null $blood_type_id
+     * @param int|null $city_id
      * @param String|null $last_donation_date
      * @return array
      */
@@ -186,6 +188,7 @@ class UserRepository extends Repository
         ?String $email,
         ?String $phone_number,
         ?int $blood_type_id,
+        ?int $city_id,
         ?String $last_donation_date
     ): array
     {
@@ -202,6 +205,15 @@ class UserRepository extends Repository
                 $check_blood_type = BloodType::find($blood_type_id);
                 if ($check_blood_type == null) {
                     throw new \Exception("Kan grubu bulunamadı.");
+                }
+            }
+
+            // check city
+            if (!empty($city_id))
+            {
+                $city = City::find($city_id);
+                if ($city == null) {
+                    throw new \Exception("Şehir bulunamadı.");
                 }
             }
 
@@ -235,6 +247,10 @@ class UserRepository extends Repository
 
             if (!empty($last_donation_date)) {
                 $user->last_donation_date = $last_donation_date;
+            }
+
+            if (!empty($city_id)) {
+                $user->city = $city_id;
             }
 
             $status = $user->save();

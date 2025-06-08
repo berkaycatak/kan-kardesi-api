@@ -19,6 +19,7 @@ class UserController extends Controller
             $email = $request->email;
             $phone_number = $request->phone_number;
             $blood_type_id = $request->blood_type_id;
+            $city_id = $request->city_id;
             $last_donation_date = $request->last_donation_date;
 
             $user_repository = new UserRepository();
@@ -27,7 +28,8 @@ class UserController extends Controller
                 email: $email,
                 phone_number: $phone_number,
                 blood_type_id: $blood_type_id,
-                last_donation_date: $last_donation_date
+                city_id: $city_id,
+                last_donation_date: $last_donation_date,
             );
 
             if ($response["error"] == 1)
@@ -38,6 +40,7 @@ class UserController extends Controller
 
         }catch (\Exception $exception){
             $this->output['error'] = 1;
+            $this->output['status'] = false;
             $this->output['msg'] = $exception->getMessage();
         }
 
@@ -71,6 +74,7 @@ class UserController extends Controller
 
         }catch (\Exception $exception){
             $this->output['error'] = 1;
+            $this->output['status'] = false;
             $this->output['msg'] = $exception->getMessage();
         }
 
