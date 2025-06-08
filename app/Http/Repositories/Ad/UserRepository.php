@@ -66,7 +66,7 @@ class UserRepository extends Repository
      * @param String $password
      * @param String|null $lat
      * @param String|null $lng
-     * @param String|null $city
+     * @param int|null $city
      * @return mixed
      */
     public function create(
@@ -77,7 +77,7 @@ class UserRepository extends Repository
         String $password,
         ?String $lat,
         ?String $lng,
-        ?String $city
+        ?int $city
     ): mixed
     {
         try {
@@ -88,6 +88,24 @@ class UserRepository extends Repository
             $user_check = User::where("phone", $phone_number)->count() == 0;
             if (!$user_check)
                 throw new \Exception("Bu telefon numarası kullanılıyor.");
+
+            // check blood type
+            if (!empty($blood_type_id))
+            {
+                $check_blood_type = BloodType::find($blood_type_id);
+                if ($check_blood_type == null) {
+                    throw new \Exception("Kan grubu bulunamadı.");
+                }
+            }
+
+            // check city
+            if (!empty($city_id))
+            {
+                $city = City::find($city_id);
+                if ($city == null) {
+                    throw new \Exception("Şehir bulunamadı.");
+                }
+            }
 
             $user                   = new User();
             $user->name             = $name;
