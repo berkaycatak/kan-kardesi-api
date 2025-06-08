@@ -43,6 +43,7 @@ class AuthController extends Controller
         }catch (\Exception $exception){
             $this->output = [
                 'error' => 1,
+                'status' => false,
                 'msg' => $exception->getMessage()
             ];
         }
@@ -97,6 +98,7 @@ class AuthController extends Controller
         }catch (\Exception $exception){
             $this->output = [
                 'error' => 1,
+                'status' => false,
                 'msg' => $exception->getMessage()
             ];
         }
@@ -130,8 +132,7 @@ class AuthController extends Controller
             $this->output["user"] = $response["user"];
             $this->output["token"] = $response["token"];
         }catch (\Exception $exception){
-
-            $this->output["status"] = false;
+            $this->output['status'] = false;
             $this->output["msg"] = $exception->getMessage();
         }
 
