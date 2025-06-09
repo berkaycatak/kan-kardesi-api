@@ -15,6 +15,11 @@ class BloodRequest extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function cityData()
+    {
+        return $this->belongsTo(City::class, 'city', 'id');
+    }
+
     public function requiredBloodType()
     {
         return $this->belongsTo(BloodType::class, 'required_blood_type_id');
