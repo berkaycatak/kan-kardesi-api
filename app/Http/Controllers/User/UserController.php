@@ -80,4 +80,32 @@ class UserController extends Controller
 
         return $this->output;
     }
+
+    public function getProfile(Request $request): mixed
+    {
+        try {
+            $id = $request->id;
+
+            if (empty($id))
+                throw new \Exception("Lütfen tüm alanları doldurun.");
+
+            $user_repository = new UserRepository();
+            $response = $user_repository->getProfile(
+                id: $id
+            );
+
+            if ($response["error"] == 1)
+                throw new \Exception($response["msg"]);
+
+            $this->output["status"] = true;
+            $this->output["user"] = $response["user"];
+
+        }catch (\Exception $exception){
+            $this->output['error'] = 1;
+            $this->output['status'] = false;
+            $this->output['msg'] = $exception->getMessage();
+        }
+
+        return $this->output;
+    }
 }

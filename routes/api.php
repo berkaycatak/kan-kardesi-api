@@ -24,6 +24,8 @@ Route::middleware([StorePlayerId::class])->group(function () {
 
     Route::post("/blood/get-blood-types", [BloodController::class, "getBloodTypes"])->name("get_blood_types");
 
+    Route::post("/user/profile", [UserController::class, "getProfile"])->name("get_user_profile");
+
     Route::group(["middleware" => ["auth:sanctum"]], function() {
         Route::post("/auth/logout", [AuthController::class, "logout"])->name("logout");
 

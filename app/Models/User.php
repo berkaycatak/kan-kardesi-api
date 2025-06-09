@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     public function bloodRequests()
     {
-        return $this->hasMany(BloodRequest::class);
+        return $this->hasMany(BloodRequest::class)->with("cityData", "user", "requiredBloodType");
     }
 
     public function city()
