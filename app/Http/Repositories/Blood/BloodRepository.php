@@ -95,9 +95,9 @@ class BloodRepository extends Repository
                 ->where('status', 'pending')
                 ->get();
 
-            if ($bloodRequests->isEmpty()) {
-                throw new \Exception("Bu şehirde uygun bir kan talebi bulunamadı.");
-            }
+            //if ($bloodRequests->isEmpty()) {
+            //    throw new \Exception("Bu şehirde uygun bir kan talebi bulunamadı.");
+            //}
 
             $this->output["blood_requests"] = $bloodRequests;
             return $this->output;
