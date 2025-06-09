@@ -18,7 +18,7 @@ class HomeController extends Controller
             $blogRepository = new BlogRepository();
 
             $bloodRequests = $bloodRepository->search(
-                city: Auth::user()->id,
+                city: Auth::user()->city,
                 blood_type_id: Auth::user()->blood_type_id,
             );
 

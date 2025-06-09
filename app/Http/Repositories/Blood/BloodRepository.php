@@ -78,6 +78,7 @@ class BloodRepository extends Repository
             $compatibleBloodTypes = BloodCompatibility::where('donor_blood_type_id', $blood_type_id)
                 ->pluck('recipient_blood_type_id');
 
+
             if ($compatibleBloodTypes->isEmpty()) {
                 throw new \Exception("Bu kan grubu için uygun alıcı bulunamadı.");
             }
@@ -93,6 +94,7 @@ class BloodRepository extends Repository
             $bloodRequests = BloodRequest::whereIn('required_blood_type_id', $compatibleBloodTypes)
                 ->where('city', $city)
                 ->where('status', 'pending')
+                ->with(['requiredBloodType', 'user', 'cityData'])
                 ->get();
 
             //if ($bloodRequests->isEmpty()) {
