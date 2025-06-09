@@ -62,7 +62,7 @@ class BloodController extends Controller
             if ($bloodRequests["error"] == 1)
                 throw new \Exception($bloodRequests["msg"]);
 
-            $this->output["blood_requests"] = $bloodRequests;
+            $this->output["blood_requests"] = $bloodRequests["blood_requests"];
             $this->output["status"] = true;
 
         }catch (\Exception $exception){
