@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Blood\BloodController;
+use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Middleware\StorePlayerId;
 use Illuminate\Http\Request;
@@ -25,6 +26,8 @@ Route::middleware([StorePlayerId::class])->group(function () {
 
     Route::group(["middleware" => ["auth:sanctum"]], function() {
         Route::post("/auth/logout", [AuthController::class, "logout"])->name("logout");
+
+        Route::post("/home", [HomeController::class, "getHome"])->name("home");
 
         Route::prefix('/settings')->group(function () {
             Route::post("/update", [UserController::class, "update"])->name("update_profile");
