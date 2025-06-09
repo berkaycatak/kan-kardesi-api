@@ -317,4 +317,27 @@ class UserRepository extends Repository
         }
         return $this->output;
     }
+
+    public function getProfile(
+        int $id,
+    ): mixed
+    {
+        try {
+            $user = User::where("id", $id)
+                ->with(["bloodType", "bloodRequests"])
+                ->first();
+
+            if ($user == null) {
+                throw new \Exception("Kullanıcı bulunamadı.");
+            }
+
+            $this->output["user"] = $user;
+        }catch (\Exception $exception){
+            $this->output["error"] = 1;
+            $this->output["msg"] = $exception->getMessage();
+        }
+        return $this->output;
+    }
+
+
 }
